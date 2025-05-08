@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">\
+    <link rel="stylesheet" href="/assets/css/manager_dashboard.css">
+    
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Manager Dashboard</h2>
+        <ul>
+            <li>Dashboard</li>
+            <li>Logistics</li>
+            <li>Deliveries</li>
+            <li>Customers</li>
+            <li>Transactions</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Elements -->
+        <div class="dashboard-elements">
+            <div class="card">
+                <h3>Turnover (per month)</h3>
+                <p>$12,000</p>
+            </div>
+            <div class="card">
+                <h3>Expenses</h3>
+                <p>$5,000</p>
+            </div>
+            <div class="card">
+                <h3>Cash</h3>
+                <p>$3,000</p>
+            </div>
+        </div>
+
+        <!-- Logistics Table -->
+        <div class="table-container">
+            <h3>Logistics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Item</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Electronics</td>
+                        <td>In Transit</td>
+                        <td>2025-01-10</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Clothing</td>
+                        <td>Delivered</td>
+                        <td>2025-01-08</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Expire Timer Table -->
+        <div class="table-container">
+            <h3>Orders (Expire Timer)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Order Status</th>
+                        <th>Expires In</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1001</td>
+                        <td>John Doe</td>
+                        <td>Pending</td>
+                        <td>2 Days</td>
+                    </tr>
+                    <tr>
+                        <td>1002</td>
+                        <td>Jane Smith</td>
+                        <td>Shipped</td>
+                        <td>5 Days</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Customers Table -->
+        <div class="table-container">
+            <h3>Customers</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>John Doe</td>
+                        <td>john@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jane Smith</td>
+                        <td>jane@example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Open Transactions Table -->
+        <div class="table-container">
+            <h3>Open Transactions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2001</td>
+                        <td>$500</td>
+                        <td>Processing</td>
+                        <td>2025-01-14</td>
+                    </tr>
+                    <tr>
+                        <td>2002</td>
+                        <td>$1,200</td>
+                        <td>Pending</td>
+                        <td>2025-01-13</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

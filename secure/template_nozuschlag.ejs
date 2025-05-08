@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechnung</title>
+    <style>
+
+        @page {
+            size: A4;
+            margin: 20mm 5mm 25mm 5mm;
+            /* change the margins as you want them to be. */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            
+        }
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 250px;
+        }
+        .company-info {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .recipient, .invoice-details {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .recipient td, .invoice-details td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        .invoice-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        .summary {
+            /* display: flex;
+            flex-direction: column;
+            align-items: flex-end; */
+            width: 50%;
+            margin-left: auto;
+            margin-right: 165px;
+            margin-top: 40px;
+            margin-bottom: 70px;
+        }
+        .holder span{
+            margin: 0px 10px 0px 10px;
+        }
+
+        .summary p {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .summary span:first-child {
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .summary span:last-child {
+            text-align: right;
+            min-width: 80px;
+        }
+        .bordered-p {
+            border-top: 1px solid #949494;
+            border-bottom: 1px solid #949494;
+            border-width: 1px;
+            background-color: #f0f0f0;
+        }
+        .bordered-p span{
+            margin: 10px 10px 10px 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: left;
+            color: #555;
+            
+        }
+        .floatright {
+            float: right;
+        }
+        .greybg{
+            background-color: #f0f0f0;
+            display: inline-block;
+            width: 100%;
+            padding: 4px 0px;
+            
+        }
+        .textgrey{
+            color: #4e4e4e;
+        }
+        .margin-minus{
+            margin-top: 8px;
+            margin-bottom: 0px;
+        }
+        
+        .extra-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            /* background-color: #fff;
+            border-top: 1px solid #ccc; */
+            display: flex;
+            justify-content: space-between;
+            box-sizing: border-box;
+            height: 40mm; 
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            font-size: 12px;
+            color: #151515;
+        }
+        .services-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .services-table th, .services-table td {
+            border-bottom: 1px solid #ddd;
+            border-top: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .services-table {
+            margin-bottom: 20px; /* Prevent overlap */
+        }
+        .services-table-zus {
+            margin-bottom: 20px; /* Prevent overlap */
+        }
+        .services-table-zus {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .services-table-zus td {
+            border-bottom: 1px solid #ddd;
+            border-top: 1px solid #ddd;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+        .text-container {
+            width: 90px; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table class="recipient">
+            <tr>   
+
+                <td>
+                    <p class="margin-minus">
+                    <u>Kontakt</u><br>
+                    Name: Max Mustermann<br>
+                    Email: maxmustermann@mustermail.de<br>
+                    Tel: 12345678990<br>
+                    
+                </span>
+                    <strong><u>Empfänger</u></strong><br>
+                    <u>
+                    <%= CustomerName %><br>
+                    </u>
+                    <%= CustomerAddress %> <br>
+                    <%= CustomerZipcode %>, <%= CustomerStadt %>, <%= CustomerState %> <%= CustomerCountry %><br>
+                    <p class="margin-minus">E-Adresse: <%= CustomerEmail %></p><br>
+                    
+                </td>
+                    
+                <td>
+                    <span class="textgrey">
+                        <strong>Rechnungs-Nr.:</strong> <span class="floatright"><%= RechnungNumber %></span>
+                    </span><br>
+
+                    <span class="greybg textgrey">
+                        <strong>Rechnungsdatum:</strong><span class="floatright"><%= RechnungDate %></span>
+                    </span><br>
+
+                    <span class="textgrey">
+                        <strong>Lieferdatum:</strong> <span class="floatright"><%= DeliveryDate %></span>
+                    </span><br>
+
+                    <span class="greybg textgrey">
+                        <strong>Abrechnungszeitraum:</strong> <span class="floatright"><%= BillingPeriodStart %> - <%= BillingPeriodEnd %></span>
+                    </span><br>
+
+                    <span class="textgrey">
+                        <strong>Fälligkeitsdatum:</strong> <span class="floatright"><%= DueDate %></span>
+                    </span><br>
+
+                    <span class="greybg textgrey">
+                        <strong>Vertragsnummer:</strong> <span class="floatright"><%= ContractNo %></span>
+                    </span><br>
+
+                    <span class="textgrey">
+                        <strong>Aufragsnummer:</strong> <span class="floatright"><%= OrderNo %></span>
+                    </span><br>
+
+                    
+                </td>
+            </tr>
+        </table>
+        
+        <div class="invoice-title">Rechnung</div>
+        <p>Vielen Dank für Ihr Vertrauen und die Zusammenarbeit. Nachfolgend erhalten Sie die Rechnung für unsere erbachten Leistungen.</p>
+        
+        <table class="services-table">
+            <tr>
+                <th>Position</th>
+                <th>Beschreibung</th>
+                <th>Anzahl</th>
+                <th>Preis</th>
+                <th>Gesamt</th>
+                <th>Steuer</th>
+
+            </tr>
+            
+            <% items.forEach((item, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= item.name %><br>
+                        <div class="textgrey text-container">
+                        <%= item.description %>
+                        </div>
+                    </td>
+                    <td><%= item.quantity %> LS</td>
+                    <td><%= item.price %> €</td>
+                    <td><%= item.total %> €</td>
+                    <td><%= item.tax %>%</td>
+                </tr>
+            <% }) %>
+
+        </table>
+
+        <div class="summary">
+                <p class="holder"><span>Summe Positionen (Netto):</span> <span><%= SumPosition %> €</span></p>
+                <p class="holder"><span>Zuschlag (Netto):</span> <span><%= Extra %> €</span></p>
+                <p class="holder"><span>Gesamt (Netto):</span> <span><%= SumPosition + Extra %> €</span></p>
+                <p class="holder"><span>Steuer 19% (S):</span> <span><%= (SumPosition + Extra)*(19/100) %>€</span></p>
+                <p class="holder"><span>Gesamt (Brutto):</span> <span><%= (SumPosition + Extra) + (SumPosition + Extra)*(19/100) %> €</span></p>
+            <p class="bordered-p"><span><strong>Fälliger Betrag:</strong></span> <span><strong><%= (SumPosition + Extra) + (SumPosition + Extra)*(19/100) %> €</strong></span></p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Hinweise und Bemerkungen:</strong><br>Diese Rechnung ist innerhalb von 14 Tagen ohne Abzug zahlbar.</p>
+        </div>
+    </div>
+
+    
+</body>
+</html>

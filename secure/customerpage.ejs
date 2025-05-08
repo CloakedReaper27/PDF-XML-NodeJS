@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kunde: <%= customer.firstname %> <%= customer.lastname %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/invoice.css">
+  <link rel="stylesheet" href="/assets/css/customers.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" crossorigin="anonymous" />
+</head>
+<body style="display: block;">
+
+    <div class="sidebar">
+        <h2>Manager Dashboard</h2>
+        <ul class="sidebuttons">
+            <a href="/invoice" class="buttoninside" style="
+text-decoration: none !important;"><li>Rechnungen</li></a>
+            <a href="/customers" class="buttoninside" style="
+text-decoration: none !important;"><li>Kundenmanager</li></a>
+                <a href="/services" class="buttoninside" style="
+text-decoration: none !important;"><li>Zuschlagsmanager</li></a>
+                <a href="/items" class="buttoninside" style="
+text-decoration: none !important;"><li>Itemsmanager</li></a>
+        </ul>
+    </div>
+
+    <div class="main-content-customer">
+      <div class="header-bar">
+          <h1 class="headline">Kunde: <%= customer.firstname %> <%= customer.lastname %></h1>
+        
+          <div class="action-buttons-customer">
+            <button onclick="openEditCustomer('<%= customer.customer_id %>')">Edit</button>
+            <button onclick="openDeleteBigCustomer()">Delete</button>
+            <% if (customer.paused === 0) { %>
+              <button onclick="pauseCustomer('<%= customer.customer_id %>')">Pause</button>
+            <% } else { %>
+              <button onclick="unpauseCustomer('<%= customer.customer_id %>')">Unpause</button>
+            <% } %>
+            <button onclick="customersDataOpen()">Kundendaten</button>
+            <button onclick="backToCustomers()">Back</button>
+          </div>
+      </div>
+    
+      <div id="CustomerData" class="whitebackground customer-info-grid">
+        <h2>Kundendaten</h2>
+        <div><strong>Vorname:</strong> <%= customer.firstname %></div>
+        <div><strong>Nachname:</strong> <%= customer.lastname %></div>
+        <div><strong>Email:</strong> <%= customer.email %></div>
+        <div><strong>Telefonnummer:</strong> <%= customer.phonenumber %></div>
+        <div><strong>Straße:</strong> <%= customer.address %></div>
+        <div><strong>PLZ:</strong> <%= customer.zipcode %></div>
+        <div><strong>Stadt:</strong> <%= customer.stadt %></div>
+        <div><strong>Bundesland:</strong> <%= customer.state %></div>
+        <div><strong>Land:</strong> <%= customer.country %></div>
+        <div><strong>IBAN:</strong> <%= customer.IBAN %></div>
+        <div><strong>BIC:</strong> <%= customer.BIC %></div>
+        <div><strong>Status:</strong> <%= customer.paused === 1 ? "Pausiert" : "Aktiv" %></div>
+        <div>
+          <button onclick="customersDataClose()">Close</button>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button onclick="RechnungOpen('<%= customer.customer_id %>')">Ausgangsrechnungen erstellen</button>
+        <button onclick="lieferscheinOpen('<%= customer.customer_id %>')">Lieferschein</button>
+      </div>
+
+      <div class="table-container tableFixHead">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rechnungs Nummer</th>
+                    <th>Fällig</th>
+                    <th>Betrag</th>
+                    <th>Status</th>
+                    <th>Kommentar</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+
+                    <tr>
+                        <td>test</td>
+                        <td>21.03.2025</td>
+                        <td>350 €</td>
+                        <td>Pending</td>
+                        <td>-</td>
+                        <td class="buttonHover" style="width: 96.9%;">
+                            <button onclick="">Kommentar</button>
+                            <a href="" target="_blank">
+                                <button>PDF anzeigen</button>
+                            </a>
+                            <a href="" download="">
+                                <button>PDF downloaden</button>
+                            </a>
+                                <button onclick="cancelInvoice()">Rechnung Stornieren</button>
+                                <button onclick="addPayment()">Zahlung angeben</button>
+                            <input type="hidden" id="" value="">
+                        </td>
+                    </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Lieferschein</h2>
+    <div class="table-container tableFixHead">
+        <table>
+            <thead>
+                <tr>
+                    <th>Lieferschein Nummer</th>
+                    <th>Fällig</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <% lieferschein.forEach(function(item) { %>
+                    <tr>
+                        <td><%= item.lieferscheinNumber %></td>
+                        <td><%= new Date(item.dueDate).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                        <td class="buttonHover" style="width: 96%;">
+                            <a href="/output/lieferfolder/lieferschein_<%= item.lieferscheinNumber %>.pdf" target="_blank">
+                                <button>PDF anzeigen</button>
+                            </a>
+                            <a href="/output/lieferfolder/lieferschein_<%= item.lieferscheinNumber %>.pdf" download="">
+                                <button>PDF downloaden</button>
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+     <!-- Customer Editor -->
+     <div id="CustomerModal" class="invoicefill">
+        <div class="invoicefill-content tablewidth">
+            <h2>Kunden bearbeiten</h2>
+            <input type="hidden" id="CustomerEditedID">
+            <form id="CustomerForm">
+                
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="NewCustomerLastName">Neu Kunden Nachname:</label>
+                        <input type="text" id="NewCustomerLastName" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerFirstName">Neu Kunden Vorname:</label>
+                        <input type="text" id="NewCustomerFirstName" required autocomplete="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerEmail">Neu Kunden E-Mail:</label>
+                        <input type="text" id="NewCustomerEmail" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerPhone">Neu Kunden Telefonnummer:</label>
+                        <input type="text" id="NewCustomerPhone" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerAddress">Neu Kunden Straße:</label>
+                        <input type="text" id="NewCustomerAddress" required autocomplete="street-address">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerZipcode">Neu Kunden PLZ:</label>
+                        <input type="number" id="NewCustomerZipcode" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerStadt">Neu Kunden Stadt:</label>
+                        <input type="text" id="NewCustomerStadt" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerState">Neu Kunden Bundesland:</label>
+                        <input type="text" id="NewCustomerState" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerCountry">Neu Kunden Land:</label>
+                        <input type="text" id="NewCustomerCountry" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerIBAN">Neu Kunden IBAN:</label>
+                        <input type="text" id="NewCustomerIBAN" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="NewCustomerBIC">Neu Kunden BIC:</label>
+                        <input type="text" id="NewCustomerBIC" autocomplete="off">
+                    </div>
+
+                </div>
+                <div style="margin-top: 25px;">
+                    <button type="submit" onclick="handleEditedCustomer()">Save</button>
+                    <button type="button" class="close-btn" onclick="closeEditCustomer()">Stornieren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lieferschein Creater -->
+    <div id="lieferschein" class="invoicefill">
+        <div class="invoicefill-content">
+            <h2>Lieferscheinsdaten eingeben</h2>
+            <form id="lieferscheinForm">
+                <div class="form-container padding-for-lieferschein">
+                    <div class="form-group">
+                        <label for="RechnungNumber">Lieferscheins-Nr.:</label>
+                        <input type="text" id="RechnungNumber" required autocomplete="name" readonly>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="RechnungDate">Lieferscheinsdatum:</label>
+                        <input type="date" id="RechnungDate" required autocomplete="bday">
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="DeliveryDate">Lieferdatum:</label>
+                        <input type="date" id="DeliveryDate" required autocomplete="bday">
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="DueDate">Fälligkeitsdatum:</label>
+                        <input type="date" id="DueDate" required autocomplete="bday">
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="ContractNo">Vertragsnummer:</label>
+                        <input type="number" id="ContractNo" required autocomplete="off">
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="OrderNo">Auftragsnummer:</label>
+                        <input type="number" id="OrderNo" required autocomplete="off">
+                    </div>
+                </div>
+
+                <h3>Add Items</h3>
+                <div class="multi-dropdown">
+                    <div class="dropdown-toggle" onclick="toggleDropdown('itemDropdownMenu')">Items wählen ⌄</div>
+                    <div id="itemDropdownMenu" class="dropdown-menu">
+                      <!-- Checkboxes will be injected here -->
+                    </div>
+
+                    <div id="selectedItemsContainer" style="width: 600px;"></div>
+
+                </div>
+                <div style="margin-top: 25px;">
+                    <button type="button" onclick="handlePDFSubmit('<%= customer.customer_id %>')">PDF generieren</button>
+                    <button type="button" id="submitDB" onclick="handleLieferDBSubmit('<%= customer.customer_id %>')">Lieferschein Bestätigen</button>
+                    <button type="button" class="close-btn" onclick="lieferscheinClose()">Stornieren</button>
+                </div>
+                <div style="text-align: right;" id="status"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Customer-->
+    <div id="deletebigcustomer" class="invoicefill">
+        <div class="invoicefill-content">
+            <h2>Sind Sie sicher, dass Sie diesen Kunden löschen möchten?</h2>
+            <div style="margin-top: 25px;">
+                <button onclick="deleteCustomer('<%= customer.customer_id %>')">Delete</button>
+                <button onclick="closeDeleteBigCustomer()">Stornieren</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Rechnung Creater -->
+        <div id="Rechnung" class="invoicefill">
+            <div class="invoicefill-content">
+                <h2>Lieferscheinsdaten eingeben</h2>
+                <form id="RechnungForm">
+                    <div class="form-container padding-for-lieferschein">
+                        <div class="form-group">
+                            <label for="RealRechnungNumber">Rechnung-Nr.:</label>
+                            <input type="text" id="RealRechnungNumber" required autocomplete="name" readonly>
+                        </div>
+        
+                        <div class="form-group">
+                            <label for="RechnungDeliveryDate">Lieferdatum:</label>
+                            <input type="date" id="RechnungDeliveryDate" required autocomplete="bday">
+                        </div>
+        
+                        <div class="form-group">
+                            <label for="RechnungDueDate">Fälligkeitsdatum:</label>
+                            <input type="date" id="RechnungDueDate" required autocomplete="bday">
+                        </div>
+        
+                        <div class="form-group">
+                            <label for="RechnungContractNo">Vertragsnummer:</label>
+                            <input type="number" id="RechnungContractNo" required autocomplete="off">
+                        </div>
+        
+                        <div class="form-group">
+                            <label for="RechnungOrderNo">Auftragsnummer:</label>
+                            <input type="number" id="RechnungOrderNo" required autocomplete="off">
+                        </div>
+                    </div>
+                    <h3>Add Lieferschein</h3>
+                    <div class="multi-dropdown">
+                        <div class="dropdown-toggle" onclick="toggleDropdown('lieferscheinDropdownMenu')">Lieferscheine wählen ⌄</div>
+                        <div id="lieferscheinDropdownMenu" class="dropdown-menu">
+                          <!-- Checkboxes will be injected here -->
+                        </div>
+                    </div>
+
+                    <div id="selectedLieferscheinItemsContainer"></div>
+                    
+                    <h3>Add Zuschlag</h3>
+                    <div class="multi-dropdown">
+                    <div class="dropdown-toggle" onclick="toggleDropdown('zuschlagDropdownMenu')">Zuschläge wählen ⌄</div>
+                        <div id="zuschlagDropdownMenu" class="dropdown-menu">
+                            <!-- Zuschlag checkboxes will be added here -->
+                        </div>
+                    </div>
+                    <div id="selectedZuschlagContainer">
+                    <!-- Zuschlag info (if needed) appears here -->
+                    </div>
+
+                    <div style="margin-top: 25px;">
+                        <button type="button" onclick="submitPDFRechnung('<%= customer.customer_id %>')">PDF generieren</button>
+                        <button type="button" id="submitRechnungDB">Rechnung Bestätigen</button>
+                        <button type="button" class="close-btn" onclick="Rechnungclose()">Stornieren</button>
+                    </div>
+                    <div style="text-align: right;" id="Rechnungstatus"></div>
+                </form>
+            </div>
+        </div>
+
+
+  </div>
+
+  <script src="/assets/js/customers.js"></script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Itemsmanager</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/invoice.css">
+        <link rel="stylesheet" href="/assets/css/customers.css">
+        <link rel="stylesheet" href="/assets/css/services.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="sidebar">
+            <h2>Manager Dashboard</h2>
+            <ul class="sidebuttons">
+                <a href="/invoice" class="buttoninside" style="
+    text-decoration: none !important;"><li>Rechnungen</li></a>
+                <a href="/customers" class="buttoninside" style="
+    text-decoration: none !important;"><li>Kundenmanager</li></a>
+                <a href="/services" class="buttoninside" style="
+text-decoration: none !important;"><li>Zuschlagsmanager</li></a>
+                <a href="/items" class="buttoninside" style="
+text-decoration: none !important;"><li>Itemsmanager</li></a>
+            </ul>
+        </div>
+    
+        <div class="main-content">
+            <h1>Items</h1>
+    
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button onclick="openItem()">+ Item</button>
+            </div>
+    
+            <!-- Customer Table -->
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search..." id="searcher">
+            </div>
+
+            <div class="table-container whitebackground">
+                <table class="customer-table" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th class="service_bigchild">Items Name</th>
+                            <th class="service_middlechild">Beschreibung</th>
+                            <th class="service_youngchild">Preis</th>
+                            <th class="service_youngchild">Steuer %</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% data.forEach(function(item) { %>
+                            <tr>
+                                <td class="service_bigchild">     
+                                    <%= item.name %>
+                                </td>
+                                <td class="service_middlechild">     
+                                    <%= item.description %>
+                                </td>
+                                <td class="service_youngchild">     
+                                    <%= item.price %>
+                                </td>
+                                <td class="service_youngchild">     
+                                    <%= item.tax %>
+                                </td>
+                                <td class="buttonHover-C">
+                                    
+                                    <a class="service_smallchild">
+                                        <button onclick="openEditItem('<%= item.item_id %>')">Edit</button>
+                                    </a>
+
+                                    <a class="service_smallchild">
+                                        <button onclick="openDeleteItem('<%= item.item_id %>')">Delete</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
+
+            <!-- Delete Customer-->
+            <div id="deletethisitem" class="invoicefill">
+                <input type="hidden" id="ItemDeleteID">
+                <div class="invoicefill-content">
+                    <h2>Sind Sie sicher, dass Sie diesen Item löschen möchten?</h2>
+                    <div style="margin-top: 25px;">
+                        <button onclick="deleteItem()">Delete</button>
+                        <button onclick="closeDeleteItem()">Stornieren</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Item Editor -->
+            <div id="editItemModal" class="invoicefill">
+                <div class="invoicefill-content tablewidth">
+                    <h2>Item </h2>
+                    <input type="hidden" id="ItemEditedID">
+                    <form id="editItemForm">
+                        
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="NewName">Neue Items Name:</label>
+                                <input type="text" id="NewName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewBeschreibung">Neue Beschreibung:</label>
+                                <input type="text" id="NewBeschreibung" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewSteuer">Neu Steuer:</label>
+                                <input type="number" id="NewSteuer" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewPreis">Neu Preis:</label>
+                                <input type="number" id="NewPreis" autocomplete="off">
+                            </div>
+
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button type="submit" onclick="handleEditedItem()">Save</button>
+                            <button type="button" class="close-btn" onclick="closeEditItem()">Stornieren</button>
+                        </div>
+                        <div style="text-align: right;" id="status"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Service Creater -->
+            <div id="itemModal" class="invoicefill">
+                <div class="invoicefill-content tablewidth">
+                    <h2>Item eingeben</h2>
+                    <form id="itemForm">
+                        
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="ItemName">Items Name:</label>
+                                <input type="text" id="ItemName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="Beschreibung">Beschreibung:</label>
+                                <input type="text" id="Beschreibung" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="Steuer">Steuer:</label>
+                                <input type="number" id="Steuer" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="Preis">Preis:</label>
+                                <input type="number" id="Preis" autocomplete="off">
+                            </div>
+
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button type="submit" onclick="handleItemSubmit()">Save</button>
+                            <button type="button" class="close-btn" onclick="closeItem()">Stornieren</button>
+                        </div>
+                        <div style="text-align: right;" id="status"></div>
+                    </form>
+                </div>
+            </div>
+
+        <script src="/assets/js/items.js"></script>
+
+    </body>
+</html>

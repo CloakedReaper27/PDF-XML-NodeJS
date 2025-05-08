@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Rechnungen</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/invoice.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="sidebar">
+            <h2>Manager Dashboard</h2>
+            <ul class="sidebuttons">
+
+                    <a href="/invoice" class="buttoninside" style="
+        text-decoration: none !important;"><li>Rechnungen</li></a>
+                    <a href="/customers" class="buttoninside" style="
+        text-decoration: none !important;"><li>Kundenmanager</li></a>
+                <a href="/services" class="buttoninside" style="
+text-decoration: none !important;"><li>Zuschlagsmanager</li></a>
+                <a href="/items" class="buttoninside" style="
+text-decoration: none !important;"><li>Itemsmanager</li></a>
+            </ul>
+        </div>
+    
+        <div class="main-content">
+            <h1>Rechnungen</h1>
+    
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button onclick="openModal('incoming')">Scan Eingangsrechnungen</button>
+                <button onclick="openInvoiceModal()">Ausgangsrechnungen erstellen</button>
+            </div>
+    
+            <!-- Incoming Invoice Table -->
+            <div class="table-container tableFixHead">
+                <h2>Eingangsrechnungen</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rechnung ID</th>
+                            <th>Firma</th>
+                            <th>Datum</th>
+                            <th>Fällig</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <% uploadedInvoices.forEach(item => { %>
+                        <tbody>
+                            <tr>
+                                <td><%= item.invoice_name %></td>
+                                <td><%= JSON.parse(JSON.stringify(item.invoice_data)).sender.name %></td>
+                                <td><%= new Date(JSON.parse(JSON.stringify(item.invoice_data)).issueDate).getFullYear(); %>-<%= (new Date(JSON.parse(JSON.stringify(item.invoice_data)).issueDate).getMonth() + 1).toString().padStart(2, '0'); %>-<%= new Date(JSON.parse(JSON.stringify(item.invoice_data)).issueDate).getDate().toString().padStart(2, '0'); %></td>
+                                <td><%= new Date(JSON.parse(JSON.stringify(item.invoice_data)).dueDate).getFullYear(); %>-<%= (new Date(JSON.parse(JSON.stringify(item.invoice_data)).dueDate).getMonth() + 1).toString().padStart(2, '0'); %>-<%= new Date(JSON.parse(JSON.stringify(item.invoice_data)).dueDate).getDate().toString().padStart(2, '0'); %></td>
+                                <td class="buttonHover">
+                                    <a href="/output/read_invoices/<%= item.invoice_name %>.pdf" target="_blank">
+                                        <button>PDF anzeigen</button>
+                                    </a>
+                                    <a href="/output/read_invoices/<%= item.invoice_name %>.pdf" download="">
+                                        <button>PDF downloaden</button>
+                                    </a>
+                                    <button onclick="showJSONData('<%= JSON.stringify(item.invoice_data) %>')">PDF Daten anzeigen</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    <% }); %>
+                </table>
+            </div>
+    
+
+            <div id="viewJSON" class="popup_for_JSON">
+                <div class="popup-content">
+                    <h2>Rechnungs Daten</h2>
+                    <div id="invoiceJSON"></div>
+                    <button type="button" onclick="closeJSONButton()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Outgoing Invoice Table -->
+            <h2>Ausgangsrechnungen</h2>
+            <div class="dropdown">
+                <button id="sortBtn">Sortieren ▼</button>
+                <div id="dropdownMenu" class="dropdown-content">
+                    <a href="#" onclick="sortTable('invoiceNumber')">Nummer</a>
+                    <a href="#" onclick="sortTable('dueDate')">Fällig</a>
+                    <a href="#" onclick="sortTable('customer_name')">Name</a>
+                    <a href="#" onclick="sortTable('totalowned')">Betrag</a>
+                    <a href="#" onclick="sortTable('status')">Status</a>
+                </div>
+            </div>
+            <div class="table-container tableFixHead">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rechnungs Nummer</th>
+                            <th>Kunde</th>
+                            <th>E-Mail</th>
+                            <th>Fällig</th>
+                            <th>Betrag</th>
+                            <th>Status</th>
+                            <th>Kommentar</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+
+                        <% data.forEach(function(item) { %>
+                            <tr>
+                                <td><%= item.invoiceNumber %></td>
+                                <td><%= item.customer_name %></td>
+                                <td><%= item.customer_email %></td>
+                                <td><%= new Date(item.dueDate).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                <td><%= item.totalowned %> €</td>
+                                <td><%= item.status %></td>
+                                <td><%= item.comments %></td>
+                                <td class="buttonHover">
+                                    <button onclick="addComment('<%= item.invoiceNumber %>')">Kommentar</button>
+                                    <a href="/output/pdfs/Rechnung_<%= item.invoiceNumber %>.pdf" target="_blank">
+                                        <button>PDF anzeigen</button>
+                                    </a>
+                                    <a href="/output/pdfs/Rechnung_<%= item.invoiceNumber %>.pdf" download="">
+                                        <button>PDF downloaden</button>
+                                    </a>
+                                    <% if(item.status === "Pending" && item.delete_trigger === 0) { %>
+                                        <button onclick="cancelInvoice('<%= item.invoiceNumber %>')">Rechnung Stornieren</button>
+                                    <% }; %>
+                                    <% if(item.totalowned != 0 && item.status === "Pending") { %>
+                                        <button onclick="addPayment('<%= item.invoiceNumber %>')">Zahlung angeben</button>
+                                    <% }; %>
+                                    <input type="hidden" id="totalmax_<%= item.invoiceNumber %>" value="<%= item.totalowned %>">
+                                    <!-- <button>Delete Invoice</button> -->
+                                </td>
+                            </tr>
+
+                        <% }); %>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Lieferschein</h2>
+            <div class="table-container tableFixHead">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lieferschein Nummer</th>
+                            <th>Kunde</th>
+                            <th>E-Mail</th>
+                            <th>Fällig</th>
+                            <th>Status</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+
+                        <% data.forEach(function(item) { %>
+                            <tr>
+                                <td><%= item.invoiceNumber %></td>
+                                <td><%= item.customer_name %></td>
+                                <td><%= item.customer_email %></td>
+                                <td><%= new Date(item.dueDate).toLocaleDateString('en-GB', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                <td><%= item.status %></td>
+                                <td class="buttonHover">
+                                    <a href="/output/lieferfolder/lieferschein_<%= item.invoiceNumber %>.pdf" target="_blank">
+                                        <button>PDF anzeigen</button>
+                                    </a>
+                                    <a href="/output/lieferfolder/lieferschein_<%= item.invoiceNumber %>.pdf" download="">
+                                        <button>PDF downloaden</button>
+                                    </a>
+                                </td>
+                            </tr>
+
+                        <% }); %>
+
+                    </tbody>
+                </table>
+            </div>
+
+                <div id="addComment" class="popup">
+                    <div class="popup-content">
+                        
+                        <h2>Kommenter anfügen</h2>
+                        <input type="hidden" id="invoiceNumber">
+                        
+                        <div class="form-group">
+                            <label for="commentText">Kommenter: </label>
+                            <textarea id="commentText" placeholder="Type your comment here..." required></textarea>
+                        </div>
+
+                        <button type="button" id="submitcomment">Speichern</button>
+                        <button type="button" onclick="closeButton()">Stornieren</button>
+                    </div>
+                </div>
+
+                <div id="addPayment" class="popup">
+                    <div class="popup-content">
+                        
+                        <h2>Zahlung angeben</h2>
+                        <input type="hidden" id="invoiceNumberPayment" >
+                        
+
+                        <div class="form-group">
+                            <label for="paymentText">Betrag: </label>
+                            <input type="number" id="paymentText" min="0" placeholder="Type how much..." required>€</input> 
+                        </div>
+
+                        <button type="button" id="submitPayment">Speichern</button>
+                        <button type="button" onclick="closePayment()">Stornieren</button>
+                    </div>
+                </div>
+
+                <!-- <div id="addComment">
+                    <div id="commentHere">
+                        <div class="form-group">
+                            <label>Comment: </label>
+                            <input type="text" name="Comment" required autocomplete="name">
+                        </div>
+                    </div>
+                    <button type="button" id="submitcomment" onclick="submitButton()">Apply changes</button>
+                    <button type="button" class="close-btn" onclick="closeButton()">Cancel</button>
+                </div> -->
+
+                
+
+                <!-- Invoice Creater -->
+                <div id="invoiceModal" class="invoicefill">
+                    <div class="invoicefill-content">
+                        <h2>Rechnungsdaten eingeben</h2>
+                        <form id="invoiceForm">
+                            <div class="form-container">
+                                <div class="form-group">
+                                    <label for="RechnungNumber">Rechnungs-Nr.:</label>
+                                    <input type="text" id="RechnungNumber" required autocomplete="name">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="RechnungDate">Rechnungsdatum:</label>
+                                    <input type="date" id="RechnungDate" required autocomplete="bday">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="DeliveryDate">Lieferdatum:</label>
+                                    <input type="date" id="DeliveryDate" required autocomplete="bday">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="BillingPeriodStart">Abrechnungszeitraum (Beginn):</label>
+                                    <input type="date" id="BillingPeriodStart" required autocomplete="bday">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="BillingPeriodEnd">Abrechnungszeitraum (Ende):</label>
+                                    <input type="date" id="BillingPeriodEnd" required autocomplete="bday">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="DueDate">Fälligkeitsdatum:</label>
+                                    <input type="date" id="DueDate" required autocomplete="bday">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="ContractNo">Vertragsnummer:</label>
+                                    <input type="number" id="ContractNo" required autocomplete="off">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="OrderNo">Auftragsnummer:</label>
+                                    <input type="number" id="OrderNo" required autocomplete="off">
+                                </div>
+                            </div>
+                            
+                            <div class="form-container">
+                                <div class="form-group">
+                                    <label for="CustomerName">Kunden Name:</label>
+                                    <input type="text" id="CustomerName" required autocomplete="name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerEmail">Kunden E-Mail:</label>
+                                    <input type="text" id="CustomerEmail" required autocomplete="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerPhone">Kunden Telefonnummer:</label>
+                                    <input type="number" id="CustomerPhone" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerAddress">Kunden Straße:</label>
+                                    <input type="text" id="CustomerAddress" required autocomplete="street-address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerZipcode">Kunden PLZ:</label>
+                                    <input type="number" id="CustomerZipcode" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerStadt">Kunden Stadt:</label>
+                                    <input type="text" id="CustomerStadt" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerState">Kunden Bundesland:</label>
+                                    <input type="text" id="CustomerState" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label for="CustomerCountry">Kunden Land:</label>
+                                    <input type="text" id="CustomerCountry" required autocomplete="off">
+                                </div>
+                            </div>
+
+                            <h3>Add Items</h3>
+                            <table class="form-container" id="itemForm">
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Beschreibung</th>
+                                    <th>Anzahl</th>
+                                    <th>Preis</th>
+                                    <th>Steuer</th>
+                                    <th>Gesamt</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <span id="orderPosition" value="1">1</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="name" placeholder="Name" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="description" placeholder="Beschreibung" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="quantity" placeholder="Anzahl" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="price" placeholder="Preis (€)" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="tax" placeholder="Steuer (%)" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group maxwidth">
+                                            <input type="text" name="total" placeholder="Gesamt (€)" required readonly>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 25px;">
+                                <button type="button" id="addBtn">+ Produkt/Dienstleistung</button>
+                                <button type="button" id="removeBtn">- Produkt/Dienstleistung</button>
+                            </div>
+                            <table class="summary-table" id="ZusForm">
+                                <tr>
+                                    <th>Zuschlag</th>
+                                </tr>
+                                <tr>
+                                    <td><strong>Zuschlag : </strong></td>
+                                    <td><input type="text" name="ZuschlagDescription" placeholder="Anzahl"></td>
+                                    <td><input type="text" name="ZuschlagTax" placeholder="Steuer (%)"></td>
+                                    <td><input type="text" name="ZuschlagTotal" placeholder="Gesamt (€)"></td>
+                                </tr>
+                            </table>
+                            <div style="margin-top: 25px;">
+                                <button type="button" id="addZus">+ Zuschlag</button>
+                                <button type="button" id="removeZus">- Zuschlag</button>
+                            </div>
+                            <div style="margin-top: 25px;">
+                                <button type="submit" onclick="handleInvoiceSubmit()">PDF generieren</button>
+                                <button type="button" id="submitDB" onclick="handleDBSubmit()">Rechnung Bestätigen</button>
+                                <button type="button" class="close-btn" onclick="closeInvoiceModal()">Stornieren</button>
+                            </div>
+                            <div style="text-align: right;" id="status"></div>
+                        </form>
+                    </div>
+                </div>
+    
+            <!-- Modal for Scanning and Commenting -->
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <input type="hidden" id="invoiceFilename" >
+                        <div class="drag-area" id="dropArea">
+                            <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <header>PDF Uploaden</header>
+                            <span>oder</span>
+                            <button type="button" onclick="document.getElementById('fileInputField').click()">Durchsuchen</button>
+                            <input type="file" name="pdfFile" id="fileInputField" class="file-input" accept="application/pdf" hidden onchange="displayFileName()">
+                        </div>
+                        <!-- Display the selected file name here -->
+                        <div id="fileNameDisplay"></div>
+                        <button type="submit" class="pdf-upload-margin">PDF Uploaden</button>
+                        
+                    </form>
+                    <div id="statusMessage"></div>
+                    <button onclick="closeModal()">Stornieren</button>
+                    
+                </div>
+            </div>
+
+
+            <!-- Modal for ZUGFeRD Fields -->
+            <div id="zugferdModal" class="modal">
+                <div class="modal-content">
+                    <h2>ZUGFeRD Fields</h2>
+                    <ul id="zugferdFieldsList">
+                        <!-- List of fields will be inserted here -->
+                    </ul>
+                    <button onclick="closeZugferdModal()">Close</button>
+                </div>
+            </div>
+
+        <script src="/assets/js/invoice.js"></script>
+
+    </body>
+</html>

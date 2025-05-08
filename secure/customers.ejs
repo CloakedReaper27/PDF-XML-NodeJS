@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Kundenmanager</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/invoice.css">
+        <link rel="stylesheet" href="/assets/css/customers.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="sidebar">
+            <h2>Manager Dashboard</h2>
+            <ul class="sidebuttons">
+                <a href="/invoice" class="buttoninside" style="
+    text-decoration: none !important;"><li>Rechnungen</li></a>
+                <a href="/customers" class="buttoninside" style="
+    text-decoration: none !important;"><li>Kundenmanager</li></a>
+                <a href="/services" class="buttoninside" style="
+text-decoration: none !important;"><li>Zuschlagsmanager</li></a>
+                <a href="/items" class="buttoninside" style="
+text-decoration: none !important;"><li>Itemsmanager</li></a>
+            </ul>
+        </div>
+    
+        <div class="main-content">
+            <h1>Kunden</h1>
+    
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button onclick="AddCustomer()">+ Kunde</button>
+            </div>
+    
+            <!-- Customer Table -->
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search..." id="searcher">
+            </div>
+
+            <div class="table-container whitebackground">
+                <table class="customer-table" id="customerTable">
+                    <tbody>
+                        <% data.forEach(function(item) { %>
+                            <tr class="<%= item.paused === 1 ? 'paused-row' : '' %>">
+                                <td class="bigchild">
+                                    <a href="/customer/<%= item.customer_id %>">
+                                        <%= item.firstname %> <%= item.lastname %>
+                                    </a>
+                                </td>
+                                <td class="buttonHover-C">
+                                    
+                                    <a class="smallchild">
+                                        <button onclick="openEditCustomer('<%= item.customer_id %>')">Edit</button>
+                                    </a>
+
+                                    <a class="smallchild">
+                                        <button onclick="openDeleteCustomers('<%= item.customer_id %>')">Delete</button>
+                                    </a>
+
+                                    <% if (item.paused === 0) { %>
+                                        <a class="smallchild">
+                                            <button onclick="pauseCustomer('<%= item.customer_id %>')">Pause</button>
+                                        </a>
+                                    <% }else{ %>
+                                        <a class="smallchild">
+                                            <button onclick="unpauseCustomer('<%= item.customer_id %>')">Unpause</button>
+                                        </a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Delete Customer-->
+            <div id="deletebigcustomer" class="invoicefill">
+                <input type="hidden" id="CustomerDeleteID">
+                <div class="invoicefill-content">
+                    <h2>Sind Sie sicher, dass Sie diesen Kunden löschen möchten?</h2>
+                    <div style="margin-top: 25px;">
+                        <button onclick="deleteCustomer()">Delete</button>
+                        <button onclick="closeDeleteCustomers()">Stornieren</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Editor -->
+            <div id="CustomerModal" class="invoicefill">
+                <div class="invoicefill-content tablewidth">
+                    <h2>Kunden bearbeiten</h2>
+                    <input type="hidden" id="CustomerEditedID">
+                    <form id="CustomerForm">
+                        
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="NewCustomerLastName">Neu Kunden Nachname:</label>
+                                <input type="text" id="NewCustomerLastName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerFirstName">Neu Kunden Vorname:</label>
+                                <input type="text" id="NewCustomerFirstName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerEmail">Neu Kunden E-Mail:</label>
+                                <input type="text" id="NewCustomerEmail" required autocomplete="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerPhone">Neu Kunden Telefonnummer:</label>
+                                <input type="text" id="NewCustomerPhone" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerAddress">Neu Kunden Straße:</label>
+                                <input type="text" id="NewCustomerAddress" required autocomplete="street-address">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerZipcode">Neu Kunden PLZ:</label>
+                                <input type="number" id="NewCustomerZipcode" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerStadt">Neu Kunden Stadt:</label>
+                                <input type="text" id="NewCustomerStadt" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerState">Neu Kunden Bundesland:</label>
+                                <input type="text" id="NewCustomerState" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerCountry">Neu Kunden Land:</label>
+                                <input type="text" id="NewCustomerCountry" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerIBAN">Neu Kunden IBAN:</label>
+                                <input type="text" id="NewCustomerIBAN" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="NewCustomerBIC">Neu Kunden BIC:</label>
+                                <input type="text" id="NewCustomerBIC" autocomplete="off">
+                            </div>
+
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button type="submit" onclick="handleEditedCustomer()">Save</button>
+                            <button type="button" class="close-btn" onclick="closeEditCustomer()">Stornieren</button>
+                        </div>
+                        <div style="text-align: right;" id="status"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Customer Creater -->
+            <div id="invoiceModal" class="invoicefill">
+                <div class="invoicefill-content tablewidth">
+                    <h2>Kunden eingeben</h2>
+                    <form id="invoiceForm">
+                        
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label for="CustomerLastName">Kunden Nachname:</label>
+                                <input type="text" id="CustomerLastName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerFirstName">Kunden Vorname:</label>
+                                <input type="text" id="CustomerFirstName" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerEmail">Kunden E-Mail:</label>
+                                <input type="text" id="CustomerEmail" required autocomplete="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerPhone">Kunden Telefonnummer:</label>
+                                <input type="text" id="CustomerPhone" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerAddress">Kunden Straße:</label>
+                                <input type="text" id="CustomerAddress" required autocomplete="street-address">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerZipcode">Kunden PLZ:</label>
+                                <input type="number" id="CustomerZipcode" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerStadt">Kunden Stadt:</label>
+                                <input type="text" id="CustomerStadt" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerState">Kunden Bundesland:</label>
+                                <input type="text" id="CustomerState" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerCountry">Kunden Land:</label>
+                                <input type="text" id="CustomerCountry" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerIBAN">Kunden IBAN:</label>
+                                <input type="text" id="CustomerIBAN" autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="CustomerBIC">Kunden BIC:</label>
+                                <input type="text" id="CustomerBIC" autocomplete="off">
+                            </div>
+                        </div>
+                        <div style="margin-top: 25px;">
+                            <button type="submit" onclick="handleCustomerSubmit()">Save</button>
+                            <button type="button" class="close-btn" onclick="closeCustomer()">Stornieren</button>
+                        </div>
+                        <div style="text-align: right;" id="status"></div>
+                    </form>
+                </div>
+            </div>
+
+        <script src="/assets/js/customers.js"></script>
+
+    </body>
+</html>

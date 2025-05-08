@@ -1,0 +1,28 @@
+{
+  "name": "washing-service-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --ignore output/**/* server.js"
+  },
+  "author": "MK",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "child_process": "^1.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lcts.1",
+    "mysql2": "^3.14.0",
+    "nodemon": "^3.1.9",
+    "puppeteer": "^24.2.0"
+  }
+}

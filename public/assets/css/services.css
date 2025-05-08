@@ -1,0 +1,19 @@
+/* For Services page only Start */
+
+.service_bigchild {
+    width: 20%;
+}
+
+.service_middlechild {
+    width: 45%;
+}
+
+.service_youngchild {
+    width: 7.5%;
+}
+
+.service_smallchild {
+    width: auto;
+}
+
+/* For Services page only End */

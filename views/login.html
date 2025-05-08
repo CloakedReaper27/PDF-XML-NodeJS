@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="/assets/css/login.css">
+</head>
+<body>
+
+    <div>
+        <img src="/assets/images/logo.png" width="auto" height="auto">
+    </div>
+
+    <div class="login-container">
+      <form id="loginForm" class="login-form">
+        <h2>Login</h2>
+        <div class="form-group">
+          <label for="username">Benutzername</label>
+          <input type="text" id="username" name="username" placeholder="Geben Sie Ihren Benutzernamen ein" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Passwort</label>
+          <input type="password" id="password" name="password" placeholder="Geben Sie Ihr Passwort ein" required>
+        </div>
+        <button type="submit">Weiter</button>
+        <p id="errorMessage" class="error-message"></p>
+      </form>
+    </div>
+
+  <script src="/assets/js/login.js"></script>
+</body>
+</html>
